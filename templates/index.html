@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heart Disease Diagnostic System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --heart-red: #ff3b3b;
+            --heart-dark: #2104a2;
+            --medical-blue: #09e34e;
+            --clean-white: #ffffff;
+            --soft-gray: #f5f6fa;
+            --border-silver: #dcdde1;
+            --monitor-bg: #2d3436;
+            --monitor-text: #ef5555;
+        }
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: #d3ffe2;
+            background-image: 
+                linear-gradient(0deg, transparent 24%, rgba(255, 59, 59, .05) 25%, rgba(255, 59, 59, .05) 26%, transparent 27%, transparent 74%, rgba(255, 59, 59, .05) 75%, rgba(255, 59, 59, .05) 76%, transparent 77%, transparent),
+                linear-gradient(90deg, transparent 24%, rgba(255, 59, 59, .05) 25%, rgba(255, 59, 59, .05) 26%, transparent 27%, transparent 74%, rgba(255, 59, 59, .05) 75%, rgba(255, 59, 59, .05) 76%, transparent 77%, transparent);
+            background-size: 50px 50px;
+            color: #2f3640;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 25px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+            max-width: 750px;
+            width: 100%;
+            border-top: 10px solid var(--heart-red);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::after {
+            content: '❤';
+            position: absolute;
+            bottom: -30px;
+            right: 0px;
+            font-size: 200px;
+            color: rgba(255, 255, 255, 0.03);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        h2 {
+            text-align: center;
+            color: var(--heart-red);
+            font-size: 1.8rem;
+            margin-bottom: 35px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        h2 span {
+            font-size: 2.2rem;
+            animation: heartbeat 1.5s ease-in-out infinite;
+            display: inline-block;
+        }
+
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            15% { transform: scale(1.2); }
+            30% { transform: scale(1); }
+            45% { transform: scale(1.15); }
+            60% { transform: scale(1); }
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            color: #57606f;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        label::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--heart-red);
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        input, select {
+            padding: 12px 15px;
+            border: 1.5px solid var(--border-silver);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background-color: var(--soft-gray);
+            font-family: 'Sarabun', sans-serif;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--heart-red);
+            background-color: #fff;
+            box-shadow: 0 0 0 4px rgba(255, 59, 59, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .full-width { grid-column: span 2; }
+
+        button {
+            width: 100%;
+            margin-top: 30px;
+            padding: 18px;
+            background: linear-gradient(135deg, var(--heart-dark), var(--heart-dark));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 20px rgba(255, 59, 59, 0.2);
+            position: relative;
+            z-index: 1;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px rgba(254, 254, 254, 0.3);
+            filter: brightness(1.1);
+        }
+
+        .result-box {
+            margin-top: 35px;
+            padding: 25px;
+            border-radius: 15px;
+            background: var(--monitor-bg);
+            color: white;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .bg-risk { background-color: #ff4757 !important; }
+        .bg-safe { background-color: #2ed573 !important; }
+
+        .result-box h3 {
+            margin: 0;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.3rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        @media (max-width: 650px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .full-width { grid-column: span 1; }
+            .container { padding: 25px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2><span>🩺</span> วิเคราะห์ความเสี่ยงโรคหัวใจ</h2>
+
+    <form method="post">
+        <div class="form-grid">
+            <div class="form-group">
+                <label>อายุ (ปี)</label>
+                <input type="number" name="age" placeholder="ระบุอายุ" required>
+            </div>
+
+            <div class="form-group">
+                <label>เพศ</label>
+                <select name="sex">
+                    <option value="1">ชาย (Male)</option>
+                    <option value="0">หญิง (Female)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>ลักษณะการเจ็บหน้าอก (CP)</label>
+                <select name="cp">
+                    <option value="0">ปกติ</option>
+                    <option value="1">เจ็บแน่นแบบชั่วคราว</option>
+                    <option value="2">เจ็บแบบมีอาการอื่นร่วม</option>
+                    <option value="3">เจ็บรุนแรง/กะทันหัน</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>ความดันโลหิตขณะพัก (mmHg)</label>
+                <input type="number" name="trestbps" placeholder="เช่น 120">
+            </div>
+
+            <div class="form-group">
+                <label>คอเลสเตอรอล (mg/dl)</label>
+                <input type="number" name="chol" placeholder="เช่น 200">
+            </div>
+
+            <div class="form-group">
+                <label>น้ำตาลในเลือด (FBS)</label>
+                <select name="fbs">
+                    <option value="0">ปกติ (<= 120 mg/dl)</option>
+                    <option value="1">สูง (> 120 mg/dl)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>ผลตรวจคลื่นหัวใจ (Rest ECG)</label>
+                <select name="restecg">
+                    <option value="0">ปกติ</option>
+                    <option value="1">พบความผิดปกติเล็กน้อย</option>
+                    <option value="2">พบความผิดปกติชัดเจน</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>อัตราเต้นหัวใจสูงสุด (Thalach)</label>
+                <input type="number" name="thalach" placeholder="เช่น 150">
+            </div>
+
+            <div class="form-group">
+                <label>เจ็บหน้าอกเมื่อออกแรง</label>
+                <select name="exang">
+                    <option value="0">ไม่มีอาการ (No)</option>
+                    <option value="1">มีอาการ (Yes)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>ความผิดปกติกราฟ (Oldpeak)</label>
+                <input type="number" step="0.1" name="oldpeak" placeholder="0.0 - 6.0">
+            </div>
+
+            <div class="form-group">
+                <label>ความชันกราฟ (Slope)</label>
+                <select name="slope">
+                    <option value="0">ชันขึ้น (Upsloping)</option>
+                    <option value="1">แนวราบ (Flat)</option>
+                    <option value="2">ชันลง (Downsloping)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>เส้นเลือดที่ผิดปกติ (CA)</label>
+                <input type="number" name="ca" min="0" max="3" placeholder="ระบุ 0-3">
+            </div>
+
+            <div class="form-group full-width">
+                <label>ผลการตรวจเลือด (Thalassemia)</label>
+                <select name="thal">
+                    <option value="1">ปกติ (Normal)</option>
+                    <option value="2">พบความบกพร่องถาวร</option>
+                    <option value="3">พบความบกพร่องที่ฟื้นฟูได้</option>
+                </select>
+            </div>
+        </div>
+
+        <button type="submit">ประมวลผลสุขภาพหัวใจ (Execute)</button>
+    </form>
+
+    {% if result and result is not none %}
+    <div id="resultMonitor" class="result-box">
+        <h3>{{ result }}</h3>
+    </div>
+
+    <script>
+        (function() {
+            const res = "{{ result }}";
+            const monitor = document.getElementById('resultMonitor');
+            
+            if (res.includes("เสี่ยง") && !res.includes("ไม่มี")) {
+                monitor.classList.add('bg-risk');
+            } else {
+                monitor.classList.add('bg-safe');
+            }
+        })();
+    </script>
+    {% endif %}
+</div>
+
+</body>
+</html>
